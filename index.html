@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Simple Todo List</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        background: #f2f2f2;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        width: 400px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .input-box {
+        display: flex;
+        gap: 10px;
+      }
+
+      input {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+      }
+
+      button {
+        padding: 10px 15px;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+      }
+
+      .add-btn {
+        background: green;
+        color: white;
+      }
+
+      ul {
+        list-style: none;
+        margin-top: 20px;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #eee;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+      }
+
+      .btn-group button {
+        margin-left: 5px;
+      }
+
+      .edit {
+        background: orange;
+        color: white;
+      }
+
+      .delete {
+        background: red;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h2>Todo List</h2>
+
+      <div class="input-box">
+        <input type="text" id="task" placeholder="Enter Task" />
+        <button class="add-btn" onclick="addTask()">Add</button>
+      </div>
+
+      <ul id="list"></ul>
+    </div>
+
+    <script>
+      let list = document.getElementById("list");
+      let input = document.getElementById("task");
+
+      // Load tasks when page opens
+      window.onload = loadTasks;
+
+      function addTask() {
+        let task = input.value.trim();
+
+        if (task == "") {
+          alert("Enter Task");
+          return;
+        }
+
+        createTask(task);
+
+        saveTasks();
+
+        input.value = "";
+      }
+
+      function createTask(task) {
+        let li = document.createElement("li");
+
+        li.innerHTML = `
+        <span>${task}</span>
+
+        <div class="btn-group">
+            <button class="edit">Edit</button>
+            <button class="delete">Delete</button>
+        </div>
+    `;
+
+        li.querySelector(".edit").addEventListener("click", () => {
+          editTask(li);
+        });
+
+        li.querySelector(".delete").addEventListener("click", () => {
+          li.remove();
+          saveTasks();
+        });
+
+        list.appendChild(li);
+      }
+
+      function editTask(li) {
+        let span = li.querySelector("span");
+
+        let newTask = prompt("Edit Task", span.textContent);
+
+        if (newTask != null && newTask.trim() != "") {
+          span.textContent = newTask.trim();
+          saveTasks();
+        }
+      }
+
+      // Save all tasks
+      function saveTasks() {
+        let tasks = [];
+
+        document.querySelectorAll("#list li span").forEach((span) => {
+          tasks.push(span.textContent);
+        });
+
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+      }
+
+      // Load tasks
+      function loadTasks() {
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+        tasks.forEach((task) => {
+          createTask(task);
+        });
+      }
+    </script>
+  </body>
+</html>
